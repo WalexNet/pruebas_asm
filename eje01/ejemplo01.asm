@@ -1,7 +1,7 @@
 section .data
 
-msg db "Hola Walex !!!",0xA,0xD ;I
-len equ $ - msg
+msg db      "Hola Walex !!!",0x0A,0x0D ;I
+len equ     $ - msg ; las equ son como variables
 
 
 section .text
