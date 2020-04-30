@@ -26,7 +26,7 @@ segment .data
     len1    equ     $-msg1
     msg2    db      0xA,0xD,"Leemos los datos guardados en el Archivo: ", 0xA
     len2    equ     $-msg2
-    archivo db      "/home/walex/Programacion/asm/eje10/archivo.txt", 0
+    archivo db      "/home/walex/Programacion/asm/eje10/archivo3.txt", 0
     
     
 
@@ -51,8 +51,8 @@ _start:
     ; ------------ Abrimos y Creamos el Archivo
     mov eax, 8          ; El 8 indica que creacion y escritura de archivo
     mov ebx, archivo    ; La ubicacion de nuestro archivo
-    mov ecx, 2
-    mov edx, 7777h      ; 
+    mov ecx, 666o      ; Permisos del archivo
+    mov edx, 0      ; 
     int 0x80
 
     test eax, eax

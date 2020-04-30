@@ -1,4 +1,4 @@
-; Arreglos
+; Realizado DWP
 
 SYS_SALIDA  equ 1   ; Reg eax
 SYS_LEE     equ 3   ; Reg eax
@@ -20,5 +20,5 @@ segment .text
 salir:
     ; Finalizamos el programa
     mov eax, SYS_SALIDA
-    xor ebx, ebx
+    xor ebx, ebx 		; Es = mov ebx, 0
     int 0x80

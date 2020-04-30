@@ -1,0 +1,106 @@
+********************************************************************************
+--------------------- < APUNTES ASEMBLER LINUX CON NASM > ----------------------
+********************************************************************************
+
+    Antes de invocar la nterrupcion 0x80 hay que depositar en el registro EAX
+el numero del servicio al que se quiera invocar.
+Los parametros necesarios para el servicio también, deben depositarce en
+registros, estos registros son: 
+
+            EBX, ECX, EDX, ESI, EDI y EBP
+    
+Lógicamente dependiendo de la cantidad de parametros que use el Servicio
+(Funcion), parte de los registros no se utilizaran, pero debe ser en ese orden,
+si el servicio usa tres parametros, se usaran EBX, ECX y EDX, si solo requiere
+uno, se usara el EBX.
+
+Ejemplo:
+
+Escribir un mensaje en pantalla,
+
+    
+    mov eax, 4          ; Servicio del Sistema para escribir. Valor 4
+    mov ebx, 1          ; 1º Parametro, le decimos que use la salida
+                        ;    standard STDOUT. Valor 1
+    mov ecx, msg        ; 2º Parametro, en msg pasamos la direccion de 
+                        ;    memoria en donde empieza n uestro mensaje
+    mov edx, lenmsg     ; 3º Parametro, en lenmsg le pasamos el nro de 
+                        ;    byte a imprimir o longitud del msg en byte
+    int 0x80            ; Por ultimo llamamos a la interrupción del sistema
+    
+Para devolver el control al sistema y salir de nuestro programa,
+
+    mov eax, 1          ; Servicio para vover al sistema. Valor 1
+    mov ebx, 0 		    ; Código de salida, devolvemos 0
+                        ; con 0 decimos al sistema que la ejecucion fue correcta
+    int 0x80            ; Y por ultimo la interrupción.
+    
+-------------------------------------------------------------------------------
+                    CONSTANTES Y SERVICIOS MAS COMUNES
+-------------------------------------------------------------------------------
+
+    Servicios:
+    ----------
+    %define SYS_EXIT    1       ;(EAX) Servicio de Salida del sistema
+    %define SYS_READ    3       ;(EAX) Servicio de lectura
+    %define SYS_WRITE   4       ;(EAX) Servicio de escritura
+    
+    %define STDIN       0       ;(EBX) Entrada estandar del sistema
+    %define STDOUT      1       ;(EBX) Salida estandar del sistema
+    
+    Constantes:
+    -----------
+    %define LF          0x0A    ; Caracter Avance de lina
+    %define CR          0x13    ; Caracter Retorno de carro
+    %define TAB         0x09    ; Caracter Tabulador (8 Espacios)
+
+-------------------------------------------------------------------------------
+                          TRABAJANDO CON ARCHIVOS
+-------------------------------------------------------------------------------
+    Para trabajar con archivo lo primero que debemos hacer es abrirlo, para
+ello usaremos el servicio 5 de la intterrupcion 0x80, equivalente a la función
+open, aparte de poner EAX a 5, los parametros son los siguientes:
+
+      * EBX: Contendrá la dirección de memoria, con una cadena de caracteres 
+        terminada en nulo, indicando el nombre del archivo o dispositivo a
+        abrir. Puede ser una ruta relativa o absoluta.
+        
+      * ECX: Modo de acceso al archivo. Será un conjunto de bits, el cual 
+        indicara el modo de apertura del archivo.
+        
+      * EDX: Permisos del archivo en caso de que se abra creándolo.
+            
+    Si todo va bien, y el archivo pudo habrirse sin problemas, obtendremos en
+el registro EAX el descriptor del archivo, identificador que usariamos con los
+servicios vistos antes d escritura y lectura.
+     
+     
+PUNTERO DE LECTURA/ESCRITURA
+----------------------------
+
+    Cuando se abre o crea un archivo, el puntero de lectura y escritura, se 
+encuentra siempre en el inicio, a menos que se haya empleado el modo O_APPEND,
+caso en el que el puntero siempre estará al final. Para alterar la posición
+del puntero en el archivo, tenemos el servicio 13h, correspondiente a la 
+funcion lseek.
+    Al llamar a este servicio deberemos facilitar los siguientes parametros:
+    
+      * EBX: Descriptor del archivo cuyo puntero va a manipularse.
+        
+      * ECX: Número de bytes a desplazarse desde el punto que es indicado como
+        referencia.
+        
+      * EDX: Punto de referencia para el desplazamiento.
+      
+
+
+Puntos de Referencia:
+
+    Constante   Valor       Punto de referencia
+   ----------------------------------------------------- 
+    SEEK_SET    0           Inicio del archivo
+    SEEK_CUR    1           Posición Actual del archivo
+    SEEK_END    2           Fin del archivo
+        
+
+
