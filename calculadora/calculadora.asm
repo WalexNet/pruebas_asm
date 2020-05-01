@@ -1,78 +1,60 @@
 ; Realizado DWP
 
-; Macros
-%macro escribe 2
-    ; Imprimimos mensaje
-    mov eax, SYS_WRITE  ; Le decimos al eax que vamos a imprimir
-    mov ebx, STDOUT     ; En ebx le decimos que use la salida standar
-    mov ecx, %1         ; La direccion de memoria a imprimir
-    mov edx, %2         ; Y el nro de byte a imprimir
-    int 0x80
-%endmacro
+; Cargamos Macros y constantes
+
+%include "../inc/macros_const.inc"
+
 
 
 segment .data
-    ; Constantes
-    %define SYS_EXIT    1       ; Reg eax
-    %define SYS_READ    3       ; Reg eax
-    %define SYS_WRITE   4       ; Reg eax
-    %define STDIN       0       ; Reg ebx
-    %define STDOUT      1       ; Reg ebx
-    %define LF          0x0A
-    %define CR          0x13
-    %define TAB         0x09
 
     ; variables de manesajes
-    linea       db  "******************************", LF
+    linea       db  "******************************", LF, 0
     lenlinea    equ $- linea
 
-    titulo1     db  "*      Menú Calculadora      *", LF
+    titulo1     db  "*      Menú Calculadora      *", LF, 0
     lentit1     equ $- titulo1
 
-    titulo2     db  "*          Opciones          *", LF
+    titulo2     db  "*          Opciones          *", LF, 0
     lentit2     equ $- titulo2
 
-    opciones    db  LF,TAB, "1) Suma", LF, TAB, "2) Resta", LF, TAB, "3) Multiplicar", LF, TAB, "4) Dividir", LF, TAB, "5) Salir",LF, LF
+    opciones    db  LF,TAB, "1) Suma", LF, TAB, "2) Resta", LF, TAB, "3) Multiplicar", LF, TAB, "4) Dividir", LF, TAB, "5) Salir",LF, LF, 0
 	lenOpciones equ $- opciones
 
-    seleccione  db  "Seleccione: "
+    seleccione  db  "Seleccione: ", 0
     lensel      equ $- seleccione
 
-    sumamsg     db  "Sumando", LF
+    sumamsg     db  "Sumando", LF, 0
     lensum      equ $- sumamsg
 
-    restamsg    db  "Restando", LF
+    restamsg    db  "Restando", LF, 0
     lenrest     equ $- restamsg
 
-    multimsg    db  "Multiplicando", LF
+    multimsg    db  "Multiplicando", LF, 0
     lenmulti    equ $- multimsg
 
-    divmsg      db  "Dividiendo", LF
+    divmsg      db  "Dividiendo", LF, 0
     lendiv      equ $- divmsg
    
-    msgSalida   db  LF, LF, "Fin de la ejecucion.", LF, "See You", LF
+    msgSalida   db  LF, LF, "Fin de la ejecucion.", LF, "See You", LF, 0
     lenmsgsal   equ $- msgSalida
 
-    msgOpcInc   db  LF, LF, "Opcion incorrecta, vuelva a intentarlo...", LF
+    msgOpcInc   db  LF, LF, "Opcion incorrecta, vuelva a intentarlo...", LF, 0
     lenOpcInc   equ $- msgOpcInc
+
+    msgContinua db  LF, "Presione (S) para continuar: ", 0
+    lenContinua equ $- msgContinua
 
 segment .bss
     ; Variables
-    opc     resb 1
-    num1    resw 1
-    num2    resw 1
-    res     resw 1
+    opcMenu     resb 1
+    opcSalir    resb 1
+    num1        resw 1
+    num2        resw 1
+    res         resw 1
 
 segment .text
 
-; Procedimiento
-leeTeclado:
-    ; Lectura del teclado
-    mov eax, SYS_READ
-    mov ebx, STDIN
-    mov edx, 1          ; Nro de posiciones de lo que guardamos en ecx
-    int 0x80
-ret
 
 global _start
 
@@ -80,23 +62,21 @@ _start:
  
  ; Iniciamos con el menú principal del programa
 menu:
-    escribe linea, lenlinea
-    escribe titulo1, lentit1
-    escribe linea, lenlinea
-    escribe titulo2, lentit2
-    escribe linea, lenlinea
+    EscribeConsola linea, lenlinea
+    EscribeConsola titulo1, lentit1
+    EscribeConsola linea, lenlinea
+    EscribeConsola titulo2, lentit2
+    EscribeConsola linea, lenlinea
 
-    escribe opciones, lenOpciones
+    EscribeConsola opciones, lenOpciones
 
-    escribe linea, lenlinea
-    escribe seleccione, lensel
+    EscribeConsola linea, lenlinea
+    EscribeConsola seleccione, lensel
     ; Leemos la Opción 
-    mov ecx, opc                            ; Le decimos a ecx en que direccion guarda la opcion
-    call leeTeclado
+    LeeConsola opcMenu, 1
 
-    ; escribe ecx, 1
 
-    mov al, [opc]
+    mov al, [opcMenu]
     sub al, '0'
 
     cmp al, 1
@@ -114,32 +94,34 @@ menu:
     cmp al, 5
     je salir
 
-    escribe msgOpcInc, lenOpcInc
+    EscribeConsola msgOpcInc, lenOpcInc
     jmp menu
 
 suma:
-    escribe sumamsg, lensum
+    EscribeConsola sumamsg, lensum
+
+    EscribeConsola msgContinua, lenContinua
+    
+    LeeConsola opcSalir, 1
 
     jmp salir
 
 resta:
-    escribe restamsg, lenrest
+    EscribeConsola restamsg, lenrest
 
     jmp salir
 
 multiplica:
-    escribe multimsg, lenmulti
+    EscribeConsola multimsg, lenmulti
 
     jmp salir
 
 divide:
-    escribe divmsg, lendiv
+    EscribeConsola divmsg, lendiv
 
     jmp salir
 
 salir:
-    escribe msgSalida, lenmsgsal
+    EscribeConsola msgSalida, lenmsgsal
     ; Finalizamos el programa
-    mov eax, SYS_EXIT
-    xor ebx, ebx 		; Es = mov ebx, 0 . Tambien es el valor que devuelve
-    int 0x80
+    INT80 SYS_EXIT, 0, 0, 0

@@ -1,5 +1,5 @@
 ********************************************************************************
----------------------- < APUNTES ASMBLER LINUX CON NASM > ----------------------
+--------------------- < APUNTES ASEMBLER LINUX CON NASM > ----------------------
 ********************************************************************************
 
     Antes de invocar la nterrupcion 0x80 hay que depositar en el registro EAX
@@ -18,14 +18,15 @@ Ejemplo:
 
 Escribir un mensaje en pantalla,
 
+    msg db 'Hola.', 0x0A, 0
     
     mov eax, 4          ; Servicio del Sistema para escribir. Valor 4
     mov ebx, 1          ; 1º Parametro, le decimos que use la salida
                         ;    standard STDOUT. Valor 1
     mov ecx, msg        ; 2º Parametro, en msg pasamos la direccion de 
                         ;    memoria en donde empieza n uestro mensaje
-    mov edx, lenmsg     ; 3º Parametro, en lenmsg le pasamos el nro de 
-                        ;    byte a imprimir o longitud del msg en byte
+    mov edx, 7          ; 3º Parametro, el nro de byte a imprimir
+                        ;    o longitud del msg en byte
     int 0x80            ; Por ultimo llamamos a la interrupción del sistema
     
 Para devolver el control al sistema y salir de nuestro programa,
@@ -75,6 +76,41 @@ el registro EAX el descriptor del archivo, identificador que usariamos con los
 servicios vistos antes d escritura y lectura.
      
      
+Rutina de ejemplo de Creacion y Escritura y Lectura Archivo:
+
+    archivo db      "/home/user/archivo.txt", 0
+    texto   db      "Este texto se guarda en el archivo",0
+    
+    ; ------------ Abrimos y Creamos el Archivo
+    mov eax, 8              ; El 8 indica que creacion y escritura de archivo
+    mov ebx, archivo        ; La ubicacion de nuestro archivo
+    mov ecx, 0110110110b    ; Permisos del archivo
+    mov edx, 0     
+    int 0x80
+    
+    ; Escribimos en el archivo
+    mov eax, SYS_WRITE      ; Le decimos al eax que vamos a imprimir
+    mov ebx, [idarchivo]    ; Le decimos que lo envie al archivo
+    mov ecx, texto          ; La direccion de memoria a imprimir
+    mov edx, 35             ; Y el nro de byte a imprimir
+    int 0x80
+    
+    ; ---------------- Leemos los datos del archivo ------------------
+    ; Abrimos como solo lectura
+    mov eax, 5          ; El 5 Apertura de solo lectura
+    mov ebx, archivo    ; La ubicacion de nuestro archivo
+    mov ecx, 0
+    mov edx, 0      
+    int 0x80
+    
+    ; Leemos el archivo
+    mov eax, SYS_LEE        ; Le decimos al eax que vamos a leer
+    mov ebx, [idarchivo]    ; Le decimos que lo envie al archivo
+    mov ecx, texto          ; La direccion de memoria a imprimir
+    mov edx, 10             ; Y el nro de byte a imprimir
+    int 0x80
+    
+     
 PUNTERO DE LECTURA/ESCRITURA
 ----------------------------
 
@@ -85,6 +121,22 @@ del puntero en el archivo, tenemos el servicio 13h, correspondiente a la
 funcion lseek.
     Al llamar a este servicio deberemos facilitar los siguientes parametros:
     
-        ebx: Descriptor del archivo cuyo puntero va a manipularse.
-        ecx: Número de bytes a desplazarse desde el punto
+      * EBX: Descriptor del archivo cuyo puntero va a manipularse.
+        
+      * ECX: Número de bytes a desplazarse desde el punto que es indicado como
+        referencia.
+        
+      * EDX: Punto de referencia para el desplazamiento.
+      
+
+
+Puntos de Referencia:
+
+    Constante   Valor       Punto de referencia
+   ----------------------------------------------------- 
+    SEEK_SET    0           Inicio del archivo
+    SEEK_CUR    1           Posición Actual del archivo
+    SEEK_END    2           Fin del archivo
+        
+
 

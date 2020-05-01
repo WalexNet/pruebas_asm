@@ -51,8 +51,8 @@ _start:
     ; ------------ Abrimos y Creamos el Archivo
     mov eax, 8          ; El 8 indica que creacion y escritura de archivo
     mov ebx, archivo    ; La ubicacion de nuestro archivo
-    mov ecx, 666o      ; Permisos del archivo
-    mov edx, 0      ; 
+    mov ecx, 0110110110b      ; Permisos del archivo
+    ;mov edx, 0      ; 
     int 0x80
 
     test eax, eax

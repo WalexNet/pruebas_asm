@@ -11,9 +11,9 @@
 ; Constantes
 ;--------------------------------------
 ; Accesos a servicios
-%define SYS_EXIT    1       ; Reg eax
-%define SYS_READ    3       ; Reg eax
-%define SYS_WRITE   4       ; Reg eax
+%define SYS_EXIT    1       
+%define SYS_READ    3       
+%define SYS_WRITE   4      
 %define SYS_OPEN    5
 %define SYS_CLOSE   6
 %define SYS_CREAT   8
@@ -27,8 +27,8 @@
 %define O_CREAT     00100h
 
 ; Permisos (Estos permisos los puse yo porque funcionan)
-%define S_IRUSR     666o    
-%define S_IWUSR     666o
+%define S_IRUSR     0110110110b    
+%define S_IWUSR     0110110110b
 
 ; Constantes para movernos
 %define SEEK_SET    0

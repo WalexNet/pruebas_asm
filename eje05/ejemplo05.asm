@@ -34,32 +34,32 @@ section  .text
 
 _start:  
 	; ----------- Mostramos Ingrese Nro 1: ---------------
-    mov eax, SYS_PRINT
-    mov ebx, STDOUT
-	mov ecx, msg1
-	mov edx, len1
-	int 0x80
+        mov eax, SYS_PRINT
+        mov ebx, STDOUT
+        mov ecx, msg1
+        mov edx, len1
+        int 0x80
 
     ; ------------ Ingresamos el Nro1 --------------------
-    mov eax, SYS_LEE
-    mov ebx, STDIN
-	mov ecx, num1
-	mov edx, 2
-	int 0x80	
+        mov eax, SYS_LEE
+        mov ebx, STDIN
+        mov ecx, num1
+        mov edx, 2
+        int 0x80	
 	
     ; ----------- Mostramos Ingrese Nro 2: ---------------
-    mov eax, SYS_PRINT
-    mov ebx, STDOUT
-	mov ecx, msg2
-	mov edx, len2
-	int 0x80	
+        mov eax, SYS_PRINT
+        mov ebx, STDOUT
+        mov ecx, msg2
+        mov edx, len2
+        int 0x80	
 
     ; ------------ Ingresamos el Nro2 --------------------
-    mov eax, SYS_LEE
-    mov ebx, STDIN
-	mov ecx, num2
-	mov edx, 2
-	int 0x80
+        mov eax, SYS_LEE
+        mov ebx, STDIN
+        mov ecx, num2
+        mov edx, 2
+        int 0x80
 
 
 ; ------------------- < Suma > ---------------------

@@ -1,6 +1,6 @@
 ; Realizado DWP
 
-%include "macros_const.inc"
+%include "../inc/macros_const.inc"
 
 
 segment .data
